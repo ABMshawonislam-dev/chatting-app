@@ -1,7 +1,19 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { RiEyeCloseFill, RiEyeFill } from "react-icons/ri";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  updateProfile,
+} from "firebase/auth";
+
+import { useNavigate } from "react-router-dom";
+import { FallingLines } from "react-loader-spinner";
+
 const Registration = () => {
+  const auth = getAuth();
+  let navigate = useNavigate();
   let [email, setEmail] = useState("");
   let [fullname, setFullname] = useState("");
   let [password, setPassword] = useState("");
@@ -9,6 +21,9 @@ const Registration = () => {
   let [fullnameerr, setFullnameerr] = useState("");
   let [passworderr, setPassworderr] = useState("");
   let [show, setShow] = useState(false);
+  let [ferr, setFerr] = useState("");
+  let [success, setSuccess] = useState("");
+  let [loading, setLoading] = useState(false);
 
   let handleEmail = (e) => {
     setEmail(e.target.value);
@@ -44,20 +59,43 @@ const Registration = () => {
 
     if (!password) {
       setPassworderr("Password name is required");
-    } else {
-      if (!/^(?=.*[a-z])/.test(password)) {
-        setPassworderr("Password must contain a lowercase");
-      } else if (!/^(?=.*[A-Z])/.test(password)) {
-        setPassworderr("Password must contain a uppercase");
-      } else if (!/^(?=.*[0-9])/.test(password)) {
-        setPassworderr("Password must contain a number");
-      } else if (!/^(?=.*[!@#$%^&*])/.test(password)) {
-        setPassworderr("Password must contain a symbol");
-      } else if (!/^(?=.*[!@#$%^&*])/.test(password)) {
-        setPassworderr("Password must contain a symbol");
-      } else if (!/^(?=.{6,})/.test(password)) {
-        setPassworderr("Password have atleast 6 character");
-      }
+    }
+
+    if (
+      email &&
+      password &&
+      fullname &&
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+    ) {
+      setLoading(true);
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((user) => {
+          updateProfile(auth.currentUser, {
+            displayName: fullname,
+            photoURL: "images/profile.jpg",
+          })
+            .then(() => {
+              console.log(user);
+              sendEmailVerification(auth.currentUser).then(() => {
+                setLoading(false);
+                setSuccess(
+                  "Registration Successfull. Please varify your email address"
+                );
+                setTimeout(() => {
+                  navigate("/login");
+                }, 2000);
+              });
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          if (errorCode.includes("auth/email-already-in-use")) {
+            setFerr("Email alredy in use");
+          }
+        });
     }
   };
 
@@ -75,6 +113,16 @@ const Registration = () => {
           <p className="font-nunito font-regular text-xl sm:text-sm mt-2.5 sml:mt-0 text-center sml:text-left">
             Free register and you can enjoy it
           </p>
+          {ferr && (
+            <p className="font-nunito font-semibold font-sm bg-red-500 text-white p-1 rounded mt-2.5">
+              {ferr}
+            </p>
+          )}
+          {success && (
+            <p className="font-nunito font-semibold font-sm bg-green-500 text-white p-1 rounded mt-2.5">
+              {success}
+            </p>
+          )}
           <div className="relative">
             <input
               className="border border-solid border-black w-full rounded-lg px-14 py-6 sml:p-4 mt-9 md:!px-14 md:!py-6 sml:mt-4 md:!mt-9"
@@ -131,12 +179,22 @@ const Registration = () => {
               </p>
             )}
           </div>
-          <button
-            onClick={handleSubmit}
-            className="w-full text-center bg-primary rounded-[86px] py-5 font-nunito font-semibold text-xl text-white mt-12 sml:mt-4 md:!mt-12"
-          >
-            Sign up
-          </button>
+          {loading ? (
+            <FallingLines
+              color="#5F35F5"
+              width="300"
+              visible={true}
+              ariaLabel="falling-lines-loading"
+            />
+          ) : (
+            <button
+              onClick={handleSubmit}
+              className="w-full text-center bg-primary rounded-[86px] py-5 font-nunito font-semibold text-xl text-white mt-12 sml:mt-4 md:!mt-12"
+            >
+              Sign up
+            </button>
+          )}
+
           <p className="font-nunito font-regular text-xs mt-9 w-full text-center sml:mt-4 md:!mt-9">
             Already have an account ?{" "}
             <Link className="font-bold text-[#EA6C00]" to="/login">

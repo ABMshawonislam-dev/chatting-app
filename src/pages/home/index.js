@@ -10,20 +10,20 @@ import UserList from "../../components/UserList";
 
 const Home = () => {
   return (
-    <div className="flex justify-between">
-      <div className="w-[186px]">
+    <div className="xl:flex justify-between p-2.5 xl:p-0">
+      <div className="xl:w-[186px]">
         <Sidebar active="home" />
       </div>
-      <div className="w-[540px]">
+      <div className="xl:w-[540px]">
         <Search />
         <Group />
         <FriendRequest />
       </div>
-      <div className="w-[540px]">
+      <div className="xl:w-[540px]">
         <Friends />
         <MyGroups />
       </div>
-      <div className="w-[540px]">
+      <div className="xl:w-[540px]">
         <UserList />
         <BlockUser />
       </div>
