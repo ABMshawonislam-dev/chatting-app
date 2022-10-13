@@ -5,6 +5,7 @@ import Registration from "./pages/registration";
 import Login from "./pages/login";
 import Home from "./pages/home";
 import Message from "./pages/message";
+import ForgotPassword from "./pages/forgotPassword";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Home />} />
       <Route path="/message" element={<Message />} />
+      <Route path="/forgotpassword" element={<ForgotPassword />} />
     </Routes>
   );
 }

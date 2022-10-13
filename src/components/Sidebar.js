@@ -3,14 +3,27 @@ import { AiOutlineHome } from "react-icons/ai";
 import { FiMessageSquare, FiSettings } from "react-icons/fi";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { MdLogout } from "react-icons/md";
+import { getAuth, signOut } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = ({ active }) => {
+  const auth = getAuth();
+  let navigate = useNavigate();
+
+  let handleSignOut = () => {
+    signOut(auth).then(() => {
+      navigate("/login");
+    });
+  };
   return (
     <div className="w-full bg-primary p-2.5 xl:py-9 xl:px-11 xl:rounded-3xl overflow-x-hidden flex gap-x-5 justify-center xl:flex-col fixed bottom-0 left-0 xl:static">
       <img
-        src="images/profileimg.png"
-        className="w-[50px] h-[50px] xl:w-[100px] xl:h-[100px] rounded"
+        src={auth.currentUser.photoURL}
+        className="w-[50px] h-[50px] xl:w-[100px] xl:h-[100px] rounded-full"
       />
+      <h4 className="text-white font-bold font-nunito text-2xl text-center">
+        {auth.currentUser.displayName}
+      </h4>
       <div className="flex xl:flex-col items-center text-white gap-x-5 xl:gap-y-20 xl:mt-24">
         <div
           className={`${
@@ -44,7 +57,10 @@ const Sidebar = ({ active }) => {
 
         <IoMdNotificationsOutline className="text-3xl xl:text-5xl" />
         <FiSettings className="text-3xl xl:text-5xl" />
-        <MdLogout className="text-3xl xl:text-5xl xl:mt-44" />
+        <MdLogout
+          onClick={handleSignOut}
+          className="text-3xl xl:text-5xl xl:mt-44"
+        />
       </div>
     </div>
   );

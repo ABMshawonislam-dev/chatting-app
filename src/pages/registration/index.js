@@ -94,6 +94,7 @@ const Registration = () => {
           const errorCode = error.code;
           if (errorCode.includes("auth/email-already-in-use")) {
             setFerr("Email alredy in use");
+            setLoading(false);
           }
         });
     }
