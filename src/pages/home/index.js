@@ -9,6 +9,7 @@ import Sidebar from "../../components/Sidebar";
 import UserList from "../../components/UserList";
 import { getAuth } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+
 const Home = () => {
   let auth = getAuth();
   let navigate = useNavigate();

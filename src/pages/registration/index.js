@@ -7,12 +7,14 @@ import {
   sendEmailVerification,
   updateProfile,
 } from "firebase/auth";
+import { getDatabase, ref, set } from "firebase/database";
 
 import { useNavigate } from "react-router-dom";
 import { FallingLines } from "react-loader-spinner";
 
 const Registration = () => {
   const auth = getAuth();
+  const db = getDatabase();
   let navigate = useNavigate();
   let [email, setEmail] = useState("");
   let [fullname, setFullname] = useState("");
@@ -75,16 +77,29 @@ const Registration = () => {
             photoURL: "images/profile.jpg",
           })
             .then(() => {
-              console.log(user);
-              sendEmailVerification(auth.currentUser).then(() => {
-                setLoading(false);
-                setSuccess(
-                  "Registration Successfull. Please varify your email address"
-                );
-                setTimeout(() => {
-                  navigate("/login");
-                }, 2000);
-              });
+              sendEmailVerification(auth.currentUser)
+                .then(() => {
+                  setLoading(false);
+                  setSuccess(
+                    "Registration Successfull. Please varify your email address"
+                  );
+                })
+                .then(() => {
+                  console.log(user);
+                  set(ref(db, "users/" + user.user.uid), {
+                    name: user.user.displayName,
+                    photoURL: user.user.photoURL,
+                    email: user.user.email,
+                  })
+                    .then(() => {
+                      setTimeout(() => {
+                        navigate("/login");
+                      }, 2000);
+                    })
+                    .catch((error) => {
+                      console.log(error);
+                    });
+                });
             })
             .catch((error) => {
               console.log(error);
