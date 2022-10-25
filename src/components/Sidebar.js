@@ -4,21 +4,30 @@ import { FiMessageSquare, FiSettings } from "react-icons/fi";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { GrCloudUpload } from "react-icons/gr";
 import { MdLogout } from "react-icons/md";
-import { getAuth, signOut } from "firebase/auth";
+import { getAuth, signOut, updateProfile } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
-import { getStorage, ref, uploadString } from "firebase/storage";
+
+import { Blocks } from "react-loader-spinner";
+import {
+  getStorage,
+  ref,
+  uploadString,
+  getDownloadURL,
+} from "firebase/storage";
 
 const Sidebar = ({ active }) => {
   const auth = getAuth();
   let navigate = useNavigate();
   const storage = getStorage();
-  const storageRef = ref(storage, "some-child");
 
   let [show, setShow] = useState(false);
+  let [loading, setLoding] = useState(false);
   let [img, setImg] = useState("");
   let [pimg, setPimg] = useState("");
+  let [imgname, setImgname] = useState("");
+  const [cropper, setCropper] = useState();
   const cropperRef = useRef(null);
   const onCrop = () => {
     const imageElement = cropperRef?.current;
@@ -39,7 +48,7 @@ const Sidebar = ({ active }) => {
   };
 
   let handleSelectImage = (e) => {
-    console.log(e.target.files[0]);
+    setImgname(e.target.files[0].name);
 
     let files;
     if (e.dataTransfer) {
@@ -54,11 +63,29 @@ const Sidebar = ({ active }) => {
     reader.readAsDataURL(files[0]);
   };
 
-  let handleUploadImage = () => {
-    console.log();
-    uploadString(storageRef, pimg).then((snapshot) => {
-      console.log("Uploaded a data_url string!");
-    });
+  const getCropData = (e) => {
+    setLoding(true);
+    const storageRef = ref(storage, imgname);
+    if (typeof cropper !== "undefined") {
+      cropper.getCroppedCanvas().toDataURL();
+      const message4 = cropper.getCroppedCanvas().toDataURL();
+      uploadString(storageRef, message4, "data_url").then((snapshot) => {
+        getDownloadURL(storageRef).then((downloadURL) => {
+          console.log("File available at", downloadURL);
+          updateProfile(auth.currentUser, {
+            photoURL: downloadURL,
+          })
+            .then(() => {
+              console.log("upload ses");
+              setLoding(false);
+              setShow(false);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        });
+      });
+    }
   };
   return (
     <div className="w-full bg-primary p-2.5 xl:py-9 xl:px-11 xl:rounded-3xl overflow-x-hidden flex gap-x-5 justify-center xl:flex-col fixed bottom-0 left-0 xl:static">
@@ -150,19 +177,35 @@ const Sidebar = ({ active }) => {
               guides={false}
               crop={onCrop}
               ref={cropperRef}
+              onInitialized={(instance) => {
+                setCropper(instance);
+              }}
             />
-            <button
-              className=" text-center bg-primary rounded-[5px] p-5 font-nunito font-semibold text-xl text-white mt-5 sml:mt-4 md:!mt-5"
-              onClick={handleUploadImage}
-            >
-              Upload
-            </button>
-            <button
-              className=" text-center ml-5 bg-[#EA6C00] rounded-[5px] p-5 font-nunito font-semibold text-xl text-white mt-5 sml:mt-4 md:!mt-5"
-              onClick={handleImageUpload}
-            >
-              Cancel
-            </button>
+            {loading ? (
+              <Blocks
+                visible={true}
+                height="80"
+                width="80"
+                ariaLabel="blocks-loading"
+                wrapperStyle={{}}
+                wrapperClass="blocks-wrapper"
+              />
+            ) : (
+              <>
+                <button
+                  className=" text-center bg-primary rounded-[5px] p-5 font-nunito font-semibold text-xl text-white mt-5 sml:mt-4 md:!mt-5"
+                  onClick={getCropData}
+                >
+                  Upload
+                </button>
+                <button
+                  className=" text-center ml-5 bg-[#EA6C00] rounded-[5px] p-5 font-nunito font-semibold text-xl text-white mt-5 sml:mt-4 md:!mt-5"
+                  onClick={handleImageUpload}
+                >
+                  Cancel
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}
