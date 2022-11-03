@@ -1,85 +1,136 @@
-import React from "react";
-
+import React, { useState, useEffect } from "react";
+import {
+  getDatabase,
+  ref,
+  onValue,
+  set,
+  push,
+  remove,
+} from "firebase/database";
+import { getAuth } from "firebase/auth";
 const MyGroups = () => {
+  let db = getDatabase();
+  let auth = getAuth();
+  let [grouplist, setGrouplist] = useState([]);
+  let [showinfo, setShowInfo] = useState(false);
+  let [memberrequest, setMemberRequest] = useState([]);
+  useEffect(() => {
+    const usersRef = ref(db, "group");
+    onValue(usersRef, (snapshot) => {
+      let arr = [];
+      snapshot.forEach((item) => {
+        if (item.val().adminid == auth.currentUser.uid) {
+          arr.push({ ...item.val(), gid: item.key });
+        }
+      });
+      setGrouplist(arr);
+    });
+  }, []);
+
+  let handleRequestShow = (item) => {
+    setShowInfo(!showinfo);
+    const usersRef = ref(db, "groupjoinrequest");
+    onValue(usersRef, (snapshot) => {
+      let arr = [];
+      snapshot.forEach((gitem) => {
+        if (
+          item.adminid == auth.currentUser.uid &&
+          item.gid == gitem.val().gid
+        ) {
+          arr.push({ ...gitem.val(), key: gitem.key });
+        }
+      });
+      setMemberRequest(arr);
+    });
+  };
+
+  let handleMemberReject = (item) => {
+    remove(ref(db, "groupjoinrequest/" + item.key));
+  };
+
+  let handleMemberAccept = (item) => {
+    console.log(item);
+    set(push(ref(db, "groupmember")), {
+      adminid: item.adminid,
+      gid: item.gid,
+      gname: item.gname,
+      gtag: item.gtag,
+      userid: item.userid,
+      username: item.username,
+      userprofile: item.userprofile,
+      key: item.key,
+    }).then(() => {
+      remove(ref(db, "groupjoinrequest/" + item.key));
+    });
+  };
+
   return (
     <div className="shadow-sm shadow-black p-5 h-[427px] overflow-y-scroll rounded-3xl mt-5">
       <h3 className="font-nunito font-semibold text-xl">My Groups</h3>
-
-      <div className="flex justify-between items-center border-b border-solid border-black pb-2.5 m-5">
-        <img
-          src="images/profileimg.png"
-          className="w-[70px] h-[70px] rounded"
-        />
-        <div>
-          <h3 className="font-nunito font-semibold text-lg">MERN Stack</h3>
-          <p className="font-nunito font-semibold text-sm">Be a MERN Warior</p>
-        </div>
-        <div>
-          <button className="font-nunito font-bold text-lg text-white bg-primary p-1.5 rounded">
-            Join
+      {showinfo ? (
+        <>
+          <button
+            onClick={() => setShowInfo(!showinfo)}
+            className="font-nunito font-bold text-lg text-white bg-primary p-1.5 rounded"
+          >
+            Back
           </button>
-        </div>
-      </div>
-      <div className="flex justify-between items-center border-b border-solid border-black pb-2.5 m-5">
-        <img
-          src="images/profileimg.png"
-          className="w-[70px] h-[70px] rounded"
-        />
-        <div>
-          <h3 className="font-nunito font-semibold text-lg">MERN Stack</h3>
-          <p className="font-nunito font-semibold text-sm">Be a MERN Warior</p>
-        </div>
-        <div>
-          <button className="font-nunito font-bold text-lg text-white bg-primary p-1.5 rounded">
-            Join
-          </button>
-        </div>
-      </div>
-      <div className="flex justify-between items-center border-b border-solid border-black pb-2.5 m-5">
-        <img
-          src="images/profileimg.png"
-          className="w-[70px] h-[70px] rounded"
-        />
-        <div>
-          <h3 className="font-nunito font-semibold text-lg">MERN Stack</h3>
-          <p className="font-nunito font-semibold text-sm">Be a MERN Warior</p>
-        </div>
-        <div>
-          <button className="font-nunito font-bold text-lg text-white bg-primary p-1.5 rounded">
-            Join
-          </button>
-        </div>
-      </div>
-      <div className="flex justify-between items-center border-b border-solid border-black pb-2.5 m-5">
-        <img
-          src="images/profileimg.png"
-          className="w-[70px] h-[70px] rounded"
-        />
-        <div>
-          <h3 className="font-nunito font-semibold text-lg">MERN Stack</h3>
-          <p className="font-nunito font-semibold text-sm">Be a MERN Warior</p>
-        </div>
-        <div>
-          <button className="font-nunito font-bold text-lg text-white bg-primary p-1.5 rounded">
-            Join
-          </button>
-        </div>
-      </div>
-      <div className="flex justify-between items-center border-b border-solid border-black pb-2.5 m-5 last:border-0">
-        <img
-          src="images/profileimg.png"
-          className="w-[70px] h-[70px] rounded"
-        />
-        <div>
-          <h3 className="font-nunito font-semibold text-lg">MERN Stack</h3>
-          <p className="font-nunito font-semibold text-sm">Be a MERN Warior</p>
-        </div>
-        <div>
-          <button className="font-nunito font-bold text-lg text-white bg-primary p-1.5 rounded">
-            Join
-          </button>
-        </div>
-      </div>
+          {memberrequest.map((item) => (
+            <div className="flex justify-between items-center border-b border-solid border-black pb-2.5 m-5">
+              <img
+                src={item.userprofile}
+                className="w-[70px] h-[70px] rounded"
+              />
+              <div>
+                <h3 className="font-nunito font-semibold text-lg">
+                  {item.username}
+                </h3>
+                <p className="font-nunito font-semibold text-sm">{item.gtag}</p>
+              </div>
+              <div>
+                <button
+                  onClick={() => handleMemberAccept(item)}
+                  className="font-nunito font-bold text-lg text-white bg-primary p-1.5 rounded"
+                >
+                  Accept
+                </button>
+                <button
+                  onClick={() => handleMemberReject(item)}
+                  className="font-nunito font-bold text-lg text-white bg-red-500 p-1.5 rounded ml-2.5"
+                >
+                  Reject
+                </button>
+              </div>
+            </div>
+          ))}
+        </>
+      ) : (
+        grouplist.map((item) => (
+          <div className="flex justify-between items-center border-b border-solid border-black pb-2.5 m-5">
+            <img
+              src="images/profileimg.png"
+              className="w-[70px] h-[70px] rounded"
+            />
+            <div>
+              <h3 className="font-nunito font-semibold text-lg">
+                {item.gname}
+              </h3>
+              <p className="font-nunito font-semibold text-sm">{item.gtag}</p>
+            </div>
+            <div>
+              <button
+                onClick={() => handleRequestShow(item)}
+                className="font-nunito font-bold text-lg text-white bg-primary p-1.5 rounded"
+              >
+                Info
+              </button>
+              <button className="font-nunito font-bold text-lg text-white bg-primary p-1.5 rounded ml-2.5">
+                Members
+              </button>
+            </div>
+          </div>
+        ))
+      )}
     </div>
   );
 };

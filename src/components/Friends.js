@@ -21,12 +21,34 @@ const Friends = () => {
           auth.currentUser.uid == item.val().receiverid ||
           auth.currentUser.uid == item.val().senderid
         ) {
-          arr.push(item.val());
+          arr.push({ ...item.val(), key: item.key });
         }
       });
       setFriends(arr);
     });
   }, []);
+
+  let handleBlock = (item) => {
+    console.log(item);
+    auth.currentUser.uid == item.senderid
+      ? set(push(ref(db, "blockusers")), {
+          block: item.receivername,
+          blockid: item.receiverid,
+          blockby: item.sendername,
+          blockbyid: item.senderid,
+        }).then(() => {
+          remove(ref(db, "friends/" + item.key));
+        })
+      : set(push(ref(db, "blockusers")), {
+          block: item.sendername,
+          blockid: item.senderid,
+          blockby: item.receivername,
+          blockbyid: item.receiverid,
+        }).then(() => {
+          remove(ref(db, "friends/" + item.key));
+        });
+  };
+
   return (
     <div className="shadow-sm shadow-black p-5 h-[427px] overflow-y-scroll rounded-3xl mt-5">
       <h3 className="font-nunito font-semibold text-xl">Friends</h3>
@@ -49,8 +71,11 @@ const Friends = () => {
             </p>
           </div>
           <div>
-            <button className="font-nunito font-bold text-lg text-white bg-primary p-1.5 rounded">
-              Join
+            <button
+              onClick={() => handleBlock(item)}
+              className="font-nunito font-bold text-lg text-white bg-primary p-1.5 rounded"
+            >
+              Block
             </button>
           </div>
         </div>
