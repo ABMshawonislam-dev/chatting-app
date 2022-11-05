@@ -5,7 +5,7 @@ import { IoMdNotificationsOutline } from "react-icons/io";
 import { GrCloudUpload } from "react-icons/gr";
 import { MdLogout } from "react-icons/md";
 import { getAuth, signOut, updateProfile } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 
@@ -111,13 +111,15 @@ const Sidebar = ({ active }) => {
             "relative z-10  after:absolute after:top-0 after:left-0 after:bg-white xl:after:w-[242%] after:h-full after:content-[''] text-center flex flex-col items-center after:z-[-1] xl:p-10 after:rounded-2xl before:absolute before:top-0 before:right-[-32px] before:rounded xl:before:bg-primary xl:before:w-[15px] before:h-full before:content-[''] before:shadow-lg shadow-cyan-500/50"
           }`}
         >
-          <AiOutlineHome
-            className={`${
-              active == "home"
-                ? "text-3xl xl:text-5xl xl:text-primary"
-                : "text-3xl xl:text-5xl text-white"
-            }`}
-          />
+          <Link to="/">
+            <AiOutlineHome
+              className={`${
+                active == "home"
+                  ? "text-3xl xl:text-5xl xl:text-primary"
+                  : "text-3xl xl:text-5xl text-white"
+              }`}
+            />
+          </Link>
         </div>
 
         <div
@@ -126,13 +128,15 @@ const Sidebar = ({ active }) => {
             "relative z-10  after:absolute after:top-0 after:left-0 after:bg-white after:w-[242%] after:h-full after:content-[''] text-center flex flex-col items-center after:z-[-1] p-10 after:rounded-2xl before:absolute before:top-0 before:right-[-32px] before:rounded before:bg-primary before:w-[15px] before:h-full before:content-[''] before:shadow-lg shadow-cyan-500/50"
           }`}
         >
-          <FiMessageSquare
-            className={`${
-              active == "message"
-                ? "text-3xl xl:text-5xl text-primary"
-                : "text-3xl xl:text-5xl text-white"
-            }`}
-          />
+          <Link to="/message">
+            <FiMessageSquare
+              className={`${
+                active == "message"
+                  ? "text-3xl xl:text-5xl text-primary"
+                  : "text-3xl xl:text-5xl text-white"
+              }`}
+            />
+          </Link>
         </div>
 
         <IoMdNotificationsOutline className="text-3xl xl:text-5xl" />
