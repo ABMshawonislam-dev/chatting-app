@@ -8,9 +8,13 @@ import {
   remove,
 } from "firebase/database";
 import { getAuth } from "firebase/auth";
-const Friends = () => {
+import { useDispatch } from "react-redux";
+import { RiMessage2Fill } from "react-icons/ri";
+import { activeChat } from "../slices/activeChat";
+const Friends = (props) => {
   let db = getDatabase();
   let auth = getAuth();
+  let dispatch = useDispatch();
   let [friends, setFriends] = useState([]);
   useEffect(() => {
     const usersRef = ref(db, "friends");
@@ -49,11 +53,28 @@ const Friends = () => {
         });
   };
 
+  let handleActiveChat = (item) => {
+    let userinfo = {};
+    if (item.receiverid == auth.currentUser.uid) {
+      userinfo.status = "single";
+      userinfo.id = item.senderid;
+      userinfo.name = item.sendername;
+    } else {
+      userinfo.status = "single";
+      userinfo.id = item.receiverid;
+      userinfo.name = item.receivername;
+    }
+    dispatch(activeChat(userinfo));
+  };
+
   return (
     <div className="shadow-sm shadow-black p-5 h-[427px] overflow-y-scroll rounded-3xl mt-5">
       <h3 className="font-nunito font-semibold text-xl">Friends</h3>
       {friends.map((item) => (
-        <div className="flex justify-between items-center border-b border-solid border-black pb-2.5 m-5">
+        <div
+          onClick={() => handleActiveChat(item)}
+          className="flex justify-between items-center border-b border-solid border-black pb-2.5 m-5"
+        >
           <img
             src="images/profileimg.png"
             className="w-[70px] h-[70px] rounded"
@@ -71,12 +92,18 @@ const Friends = () => {
             </p>
           </div>
           <div>
-            <button
-              onClick={() => handleBlock(item)}
-              className="font-nunito font-bold text-lg text-white bg-primary p-1.5 rounded"
-            >
-              Block
-            </button>
+            {props.block ? (
+              <button
+                onClick={() => handleBlock(item)}
+                className="font-nunito font-bold text-lg text-white bg-primary p-1.5 rounded"
+              >
+                Block
+              </button>
+            ) : (
+              <button className="font-nunito font-bold text-lg text-white bg-primary p-1.5 rounded">
+                <RiMessage2Fill />
+              </button>
+            )}
           </div>
         </div>
       ))}

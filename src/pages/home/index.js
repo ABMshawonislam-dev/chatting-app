@@ -39,7 +39,7 @@ const Home = () => {
             <FriendRequest />
           </div>
           <div className="xl:w-[540px]">
-            <Friends />
+            <Friends block="true" />
             <MyGroups />
           </div>
           <div className="xl:w-[540px]">

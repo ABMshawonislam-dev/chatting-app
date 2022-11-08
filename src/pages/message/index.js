@@ -1,6 +1,8 @@
 import React from "react";
 import JoinGroupList from "../../components/JoinGroupList";
 import Sidebar from "../../components/Sidebar";
+import Friends from "../../components/Friends";
+import Chat from "../../components/Chat";
 
 const Message = () => {
   return (
@@ -10,12 +12,10 @@ const Message = () => {
       </div>
       <div className="w-[540px]">
         <JoinGroupList />
+        <Friends />
       </div>
-      <div className="w-[540px]">
-        <JoinGroupList />
-      </div>
-      <div className="w-[540px]">
-        <JoinGroupList />
+      <div className="w-[1140px]">
+        <Chat />
       </div>
     </div>
   );
