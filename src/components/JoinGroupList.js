@@ -44,7 +44,7 @@ const JoinGroupList = () => {
   }, []);
 
   let handleActiveChat = (item) => {
-    console.log(item);
+    console.log("group info", item);
     let userinfo = {
       status: "group",
       name: item.gname,
