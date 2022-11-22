@@ -50,6 +50,14 @@ const Group = () => {
       username: auth.currentUser.displayName,
       userprofile: auth.currentUser.photoURL,
     });
+    set(push(ref(db, "notification")), {
+      adminid: item.adminid,
+      gid: item.gid,
+      gname: item.gname,
+      gtag: item.gtag,
+      userid: auth.currentUser.uid,
+      username: auth.currentUser.displayName,
+    });
   };
 
   return (

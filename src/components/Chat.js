@@ -17,6 +17,7 @@ const Chat = () => {
   };
 
   let handleMsgSend = () => {
+    console.log(data.groupid);
     if (data.status == "group") {
       console.log("group");
       set(push(ref(db, "groupmsg")), {
@@ -95,7 +96,7 @@ const Chat = () => {
                     <div className="mt-5 flex justify-end">
                       <div>
                         <p className="font-nunito font-medium text-xl text-white bg-primary inline-block p-3.5 rounded-xl">
-                          {item.whoreceiveid}group
+                          {item.msg}
                         </p>
                         <p className="font-nunito font-medium text-sm text-[#bebebe] mt-1">
                           {" "}
@@ -107,7 +108,7 @@ const Chat = () => {
                 : item.whoreceiveid == data.groupid && (
                     <div className="mt-5">
                       <p className="font-nunito font-medium text-xl bg-[#F1F1F1] inline-block p-3.5 rounded-xl">
-                        {item.whoreceiveid}group
+                        {item.msg}
                       </p>
                       <p className="font-nunito font-medium text-sm text-[#bebebe] mt-1">
                         {" "}

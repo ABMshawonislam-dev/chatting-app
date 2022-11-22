@@ -44,11 +44,12 @@ const JoinGroupList = () => {
   }, []);
 
   let handleActiveChat = (item) => {
+    console.log("gid", item);
     console.log("group info", item);
     let userinfo = {
       status: "group",
       name: item.gname,
-      groupid: item.key,
+      groupid: auth.currentUser.uid == item.adminid ? item.key : item.gid,
     };
 
     dispatch(activeChat(userinfo));
