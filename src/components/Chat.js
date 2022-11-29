@@ -75,7 +75,7 @@ const Chat = () => {
   }, [data.groupid]);
 
   return (
-    <div className="bg-white h-[96vh] border-l border-solid border-black p-2.5 shadow-md">
+    <div className=" text-black h-[96vh] border-l border-solid border-black p-2.5 shadow-md">
       <div className="flex gap-x-4 items-center border-b border-solid border-black pb-2.5 m-5">
         <img
           src="images/profileimg.png"

@@ -28,6 +28,18 @@ const Friends = (props) => {
           arr.push({ ...item.val(), key: item.key });
         }
       });
+      let userinfo = {};
+      if (arr[0].receiverid == auth.currentUser.uid) {
+        userinfo.status = "single";
+        userinfo.id = arr[0].senderid;
+        userinfo.name = arr[0].sendername;
+      } else {
+        userinfo.status = "single";
+        userinfo.id = arr[0].receiverid;
+        userinfo.name = arr[0].receivername;
+      }
+      dispatch(activeChat(userinfo));
+
       setFriends(arr);
     });
   }, []);

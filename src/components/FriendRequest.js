@@ -42,30 +42,36 @@ const FriendRequest = () => {
   return (
     <div className="shadow-sm shadow-black p-5 h-[427px] overflow-y-scroll rounded-3xl mt-5">
       <h3 className="font-nunito font-semibold text-xl">Friend Request</h3>
-      {friendrequest.map((item) => (
-        <div className="flex justify-between items-center border-b border-solid border-black pb-2.5 m-5">
-          <img
-            src="images/profileimg.png"
-            className="w-[70px] h-[70px] rounded"
-          />
-          <div>
-            <h3 className="font-nunito font-semibold text-lg">
-              {item.sendername}
-            </h3>
-            <p className="font-nunito font-semibold text-sm">
-              Be a MERN Warior
-            </p>
+      {friendrequest.length == 0 ? (
+        <p className="bg-green-500 p-2.5 rounded text-center text-2xl text-white mt-5">
+          No Friend Request Available
+        </p>
+      ) : (
+        friendrequest.map((item) => (
+          <div className="flex justify-between items-center border-b border-solid border-black pb-2.5 m-5">
+            <img
+              src="images/profileimg.png"
+              className="w-[70px] h-[70px] rounded"
+            />
+            <div>
+              <h3 className="font-nunito font-semibold text-lg">
+                {item.sendername}
+              </h3>
+              <p className="font-nunito font-semibold text-sm">
+                Be a MERN Warior
+              </p>
+            </div>
+            <div>
+              <button
+                onClick={() => handleAcceptFriendRequest(item)}
+                className="font-nunito font-bold text-lg text-white bg-primary p-1.5 rounded"
+              >
+                Accept
+              </button>
+            </div>
           </div>
-          <div>
-            <button
-              onClick={() => handleAcceptFriendRequest(item)}
-              className="font-nunito font-bold text-lg text-white bg-primary p-1.5 rounded"
-            >
-              Accept
-            </button>
-          </div>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   );
 };
